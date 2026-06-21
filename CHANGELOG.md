@@ -1,3 +1,9 @@
+## [1.0.0-dev.2](https://github.com/oscski/morphe-patches/compare/v1.0.0-dev.1...v1.0.0-dev.2) (2026-06-21)
+
+### ✨ New Features
+
+* **Universal:** Add `Spoof SIM provider` patch ([faf1f5e](https://github.com/oscski/morphe-patches/commit/faf1f5ed30bc9174c09a953064caa8c16ff3d8df))
+
 ## 1.0.0-dev.1 (2026-06-21)
 
 ### ✨ New Features
