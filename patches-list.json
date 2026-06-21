@@ -1,7 +1,15 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "1.0.0-dev.2",
+  "version": "1.0.0-dev.3",
   "patches": [
+    {
+      "name": "Prevent screenshot detection",
+      "description": "Removes the registration of all screen capture callbacks. This prevents the app from detecting screenshots.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": null,
+      "options": []
+    },
     {
       "name": "Spoof SIM provider",
       "description": "Spoofs information about the SIM card provider.",
