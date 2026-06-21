@@ -1,13 +1,13 @@
-group = "app.template"
+group = "app.morphe"
 
 patches {
     about {
-        name = "UserXYZ Patches"
-        description = "Patches for apps I like"
-        source = "git@github.com:UserXYZ/morphe-patches.git"
-        author = "Awesome dev"
+        name = "Oscski Patches"
+        description = "Additional universal patches for morphe"
+        source = "git@github.com:oscski/morphe-patches.git"
+        author = "oscski"
         contact = "na"
-        website = "na"
+        website = "https://github.com/oscski/morphe-patches"
         license = "GPLv3"
     }
 }
