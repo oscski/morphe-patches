@@ -1,10 +1,18 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "1.0.0-dev.3",
+  "version": "1.0.0-dev.4",
   "patches": [
     {
       "name": "Prevent screenshot detection",
       "description": "Removes the registration of all screen capture callbacks. This prevents the app from detecting screenshots.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": null,
+      "options": []
+    },
+    {
+      "name": "Remove screenshot restriction",
+      "description": "Removes the restriction of taking screenshots in apps that normally wouldn't allow it.",
       "default": false,
       "dependencies": [],
       "compatiblePackages": null,

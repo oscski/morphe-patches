@@ -1,3 +1,9 @@
+## [1.0.0-dev.4](https://github.com/oscski/morphe-patches/compare/v1.0.0-dev.3...v1.0.0-dev.4) (2026-06-21)
+
+### ✨ New Features
+
+* **Universal:** Add `Remove screenshot restriction` patch ([4a8fb68](https://github.com/oscski/morphe-patches/commit/4a8fb68eebf0990e8c7a760cab8fdb182dfdf7e6))
+
 ## [1.0.0-dev.3](https://github.com/oscski/morphe-patches/compare/v1.0.0-dev.2...v1.0.0-dev.3) (2026-06-21)
 
 ### ✨ New Features
