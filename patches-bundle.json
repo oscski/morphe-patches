@@ -1,7 +1,7 @@
 {
-  "created_at": "2026-06-21T07:43:36",
-  "description": "## [1.0.0-dev.4](https://github.com/oscski/morphe-patches/compare/v1.0.0-dev.3...v1.0.0-dev.4) (2026-06-21)\n\n### ✨ New Features\n\n* **Universal:** Add `Remove screenshot restriction` patch ([4a8fb68](https://github.com/oscski/morphe-patches/commit/4a8fb68eebf0990e8c7a760cab8fdb182dfdf7e6))",
-  "download_url": "https://github.com/oscski/morphe-patches/releases/download/v1.0.0-dev.4/patches-1.0.0-dev.4.mpp",
+  "created_at": "2026-06-22T07:46:50",
+  "description": "## 1.0.0 (2026-06-22)\n\n### ✨ New Features\n\n* **Universal:** Add `Prevent screenshot detection` patch ([2a1c6d9](https://github.com/oscski/morphe-patches/commit/2a1c6d9cb555228c09eb81131fbc3be79b00a2e9))\n* **Universal:** Add `Remove screenshot restriction` patch ([4a8fb68](https://github.com/oscski/morphe-patches/commit/4a8fb68eebf0990e8c7a760cab8fdb182dfdf7e6))\n* **Universal:** Add `Spoof SIM provider` patch ([faf1f5e](https://github.com/oscski/morphe-patches/commit/faf1f5ed30bc9174c09a953064caa8c16ff3d8df))\n* **Universal:** Add `Spoof Wi-Fi connection` patch ([0725ca7](https://github.com/oscski/morphe-patches/commit/0725ca7ccd3cdf65d6d2e8353ce7ac2989ccc0b2))",
+  "download_url": "https://github.com/oscski/morphe-patches/releases/download/v1.0.0/patches-1.0.0.mpp",
   "signature_download_url": "",
-  "version": "1.0.0-dev.4"
+  "version": "1.0.0"
 }
