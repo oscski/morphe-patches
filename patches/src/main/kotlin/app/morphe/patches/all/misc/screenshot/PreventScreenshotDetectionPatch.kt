@@ -33,6 +33,8 @@ val preventScreenshotDetectionPatch = bytecodePatch(
     description = "Removes the registration of all screen capture callbacks. This prevents the app from detecting screenshots.",
     default = false,
 ) {
+    category("Screenshots")
+
     execute {
         classDefForEach { classDef ->
             val mutableClass by lazy {

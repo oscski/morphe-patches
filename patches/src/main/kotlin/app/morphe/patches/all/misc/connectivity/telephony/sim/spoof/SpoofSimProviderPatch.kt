@@ -19,6 +19,8 @@ val spoofSIMProviderPatch = bytecodePatch(
     description = "Spoofs information about the SIM card provider.",
     default = false,
 ) {
+    category("Connectivity")
+
     val countries = Locale.getISOCountries().associateBy { Locale("", it).displayCountry }
 
     fun isoCountryPatchOption(

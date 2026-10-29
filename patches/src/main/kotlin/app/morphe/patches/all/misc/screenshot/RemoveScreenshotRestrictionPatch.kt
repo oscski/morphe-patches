@@ -2,14 +2,14 @@ package app.morphe.patches.all.misc.screenshot
 
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.patch.bytecodePatch
-import app.morphe.patches.all.misc.transformation.IMethodCall
-import app.morphe.patches.all.misc.transformation.filterMapInstruction35c
+import app.morphe.patches.util.transformation.InvocationReplacement
+import app.morphe.patches.util.transformation.findInvokeVirtualIndices
+import app.morphe.patches.util.transformation.replaceInvokeVirtualWithExtension
 import app.morphe.util.findMutableMethodOf
 import com.android.tools.smali.dexlib2.Opcode
+import com.android.tools.smali.dexlib2.iface.MethodImplementation
 import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction22c
-import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction35c
 import com.android.tools.smali.dexlib2.iface.reference.FieldReference
-import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 
 private const val EXTENSION_CLASS_DESCRIPTOR_PREFIX =
     "Lapp/morphe/extension/all/misc/screenshot/removerestriction/RemoveScreenshotRestrictionPatch"
@@ -26,6 +26,8 @@ val removeScreenshotRestrictionPatch = bytecodePatch(
 ) {
     extendWith("extensions/all/misc/screenshot/remove-screenshot-restriction.mpe")
 
+    category("Screenshots")
+
     execute {
         classDefForEach { classDef ->
             // Skip the extension class itself to avoid infinite recursion.
@@ -38,54 +40,22 @@ val removeScreenshotRestrictionPatch = bytecodePatch(
 
                 val mutableMethod by lazy { mutableClass.findMutableMethodOf(method) }
 
-                val windowCallIndices = mutableListOf<Int>()
-                val layoutParamsIputIndices = mutableListOf<Int>()
-
-                implementation.instructions.forEachIndexed { index, instruction ->
-                    when (instruction.opcode) {
-                        Opcode.INVOKE_VIRTUAL -> {
-                            val ref = (instruction as Instruction35c).reference as? MethodReference
-                                ?: return@forEachIndexed
-                            if (ref.definingClass == WINDOW_CLASS &&
-                                (ref.name == "addFlags" || ref.name == "setFlags")
-                            ) windowCallIndices.add(index)
-                        }
-                        Opcode.IPUT -> {
-                            val ref = (instruction as Instruction22c).reference as? FieldReference
-                                ?: return@forEachIndexed
-                            if (ref.definingClass == LAYOUT_PARAMS_CLASS &&
-                                ref.name == "flags" &&
-                                ref.type == "I"
-                            ) layoutParamsIputIndices.add(index)
-                        }
-                        else -> return@forEachIndexed
+                // Replace Window#addFlags / Window#setFlags with extension stubs.
+                MethodCall.entries.forEach { call ->
+                    val indices = method.findInvokeVirtualIndices(call)
+                    if (indices.isNotEmpty()) {
+                        mutableMethod.replaceInvokeVirtualWithExtension(
+                            EXTENSION_CLASS_DESCRIPTOR,
+                            call,
+                            indices,
+                        )
                     }
                 }
 
-                if (windowCallIndices.isEmpty() && layoutParamsIputIndices.isEmpty()) return@forEach
-
-                // Replace Window#addFlags / Window#setFlags with extension stubs.
-                windowCallIndices.asReversed().forEach { index ->
-                    val instruction = implementation.instructions.elementAt(index) as Instruction35c
-                    val entry = filterMapInstruction35c<MethodCall>(
-                        EXTENSION_CLASS_DESCRIPTOR_PREFIX,
-                        classDef,
-                        instruction,
-                        index,
-                    ) ?: return@forEach
-                    val (methodType, instruction35c, instructionIndex) = entry
-                    methodType.replaceInvokeVirtualWithExtension(
-                        EXTENSION_CLASS_DESCRIPTOR,
-                        mutableMethod,
-                        instruction35c,
-                        instructionIndex,
-                    )
-                }
-
                 // Strip FLAG_SECURE from direct IPUT writes to LayoutParams#flags.
-                layoutParamsIputIndices.asReversed().forEach { index ->
-                    val instruction = implementation.instructions.elementAt(index) as Instruction22c
-                    val register = instruction.registerA
+                layoutParamsIputIndices(implementation).forEach { index ->
+                    val register =
+                        (implementation.instructions.elementAt(index) as Instruction22c).registerA
                     mutableMethod.addInstructions(
                         index,
                         "and-int/lit16 v$register, v$register, -0x2001",
@@ -96,6 +66,23 @@ val removeScreenshotRestrictionPatch = bytecodePatch(
     }
 }
 
+private fun layoutParamsIputIndices(
+    implementation: MethodImplementation,
+): List<Int> = implementation.instructions
+    .withIndex()
+    .filter { (_, instruction) ->
+        if (instruction.opcode != Opcode.IPUT) return@filter false
+
+        val reference = (instruction as Instruction22c).reference as? FieldReference
+            ?: return@filter false
+
+        reference.definingClass == LAYOUT_PARAMS_CLASS &&
+            reference.name == "flags" &&
+            reference.type == "I"
+    }
+    .map { it.index }
+    .asReversed()
+
 // Information about method calls we want to replace.
 @Suppress("unused")
 private enum class MethodCall(
@@ -103,15 +90,15 @@ private enum class MethodCall(
     override val methodName: String,
     override val methodParams: Array<String>,
     override val returnType: String,
-) : IMethodCall {
+) : InvocationReplacement {
     AddFlags(
-        "Landroid/view/Window;",
+        WINDOW_CLASS,
         "addFlags",
         arrayOf("I"),
         "V",
     ),
     SetFlags(
-        "Landroid/view/Window;",
+        WINDOW_CLASS,
         "setFlags",
         arrayOf("I", "I"),
         "V",
