@@ -12,6 +12,8 @@ Click here to add these patches to Morphe: https://morphe.software/add-source?gi
 
 Or manually add this repository url as a patch source in Morphe: https://github.com/oscski/morphe-patches
 
+> Built for Morphe Patcher 2.0.0. Use a Morphe Manager version that supports it.
+
 ## 🩹 Patches list
 
 <!-- PATCHES_START EXPANDED -->
