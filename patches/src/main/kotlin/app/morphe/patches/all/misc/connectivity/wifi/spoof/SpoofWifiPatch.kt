@@ -1,12 +1,12 @@
 package app.morphe.patches.all.misc.connectivity.wifi.spoof
 
-import app.morphe.patcher.patch.BytecodePatchContext
 import app.morphe.patcher.patch.bytecodePatch
-import app.morphe.patches.all.misc.transformation.IMethodCall
-import app.morphe.patches.all.misc.transformation.Instruction35cInfo
-import app.morphe.patches.all.misc.transformation.filterMapInstruction35c
+import app.morphe.patches.util.formatCount
+import app.morphe.patches.util.patchLogger
+import app.morphe.patches.util.transformation.InvocationReplacement
+import app.morphe.patches.util.transformation.findInvokeVirtualIndices
+import app.morphe.patches.util.transformation.replaceInvokeVirtualWithExtension
 import app.morphe.util.findMutableMethodOf
-import com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction35c
 
 private const val EXTENSION_CLASS_DESCRIPTOR_PREFIX =
     "Lapp/morphe/extension/all/misc/connectivity/wifi/spoof/SpoofWifiPatch"
@@ -21,40 +21,42 @@ val spoofWiFiConnectionPatch = bytecodePatch(
 ) {
     extendWith("extensions/all/misc/connectivity/wifi/spoof/spoof-wifi.mpe")
 
+    category("Connectivity")
+
     dependsOn(
         bytecodePatch {
             execute {
+                var interceptedCount = 0
+
                 classDefForEach { classDef ->
+                    // Skip the extension class itself to avoid infinite recursion.
+                    if (classDef.type.startsWith(EXTENSION_CLASS_DESCRIPTOR_PREFIX)) return@classDefForEach
+
                     val mutableClass by lazy { mutableClassDefBy(classDef) }
 
                     classDef.methods.forEach { method ->
                         if (method.implementation == null) return@forEach
 
-                        val hits = mutableListOf<Instruction35cInfo>()
-
-                        method.implementation!!.instructions.forEachIndexed { index, instruction ->
-                            val entry = filterMapInstruction35c<MethodCall>(
-                                EXTENSION_CLASS_DESCRIPTOR_PREFIX,
-                                classDef,
-                                instruction,
-                                index,
-                            ) ?: return@forEachIndexed
-                            hits += entry
-                        }
-
-                        if (hits.isEmpty()) return@forEach
-
                         val mutableMethod by lazy { mutableClass.findMutableMethodOf(method) }
 
-                        hits.asReversed().forEach { (methodType, instruction, instructionIndex) ->
-                            methodType.replaceInvokeVirtualWithExtension(
-                                EXTENSION_CLASS_DESCRIPTOR,
-                                mutableMethod,
-                                instruction as Instruction35c,
-                                instructionIndex,
-                            )
+                        MethodCall.entries.forEach { call ->
+                            val indices = method.findInvokeVirtualIndices(call)
+                            if (indices.isNotEmpty()) {
+                                mutableMethod.replaceInvokeVirtualWithExtension(
+                                    EXTENSION_CLASS_DESCRIPTOR,
+                                    call,
+                                    indices,
+                                )
+                                interceptedCount += indices.size
+                            }
                         }
                     }
+                }
+
+                if (interceptedCount == 0) {
+                    patchLogger.warning("No Wi-Fi calls found to intercept")
+                } else {
+                    patchLogger.info("Intercepted ${formatCount(interceptedCount, "call", "calls")}")
                 }
             }
         },
@@ -68,7 +70,7 @@ private enum class MethodCall(
     override val methodName: String,
     override val methodParams: Array<String>,
     override val returnType: String,
-) : IMethodCall {
+) : InvocationReplacement {
     GetSystemService1(
         "Landroid/content/Context;",
         "getSystemService",

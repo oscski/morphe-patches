@@ -1,12 +1,12 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "1.0.0",
+  "version": "1.1.0-dev.1",
   "patches": [
     {
       "name": "Prevent screenshot detection",
       "description": "Removes the registration of all screen capture callbacks. This prevents the app from detecting screenshots.",
       "default": false,
-      "dependencies": [],
+      "category": "Screenshots",
       "compatiblePackages": null,
       "options": []
     },
@@ -14,7 +14,7 @@
       "name": "Remove screenshot restriction",
       "description": "Removes the restriction of taking screenshots in apps that normally wouldn't allow it.",
       "default": false,
-      "dependencies": [],
+      "category": "Screenshots",
       "compatiblePackages": null,
       "options": []
     },
@@ -22,9 +22,7 @@
       "name": "Spoof SIM provider",
       "description": "Spoofs information about the SIM card provider.",
       "default": false,
-      "dependencies": [
-        "BytecodePatch"
-      ],
+      "category": "Connectivity",
       "compatiblePackages": null,
       "options": [
         {
@@ -580,51 +578,6 @@
           "type": "kotlin.String",
           "default": null,
           "values": null
-        },
-        {
-          "key": "imei",
-          "title": "IMEI value",
-          "description": "15-digit IMEI to spoof, blank to skip, or 'random'.",
-          "required": false,
-          "type": "kotlin.String",
-          "default": null,
-          "values": null
-        },
-        {
-          "key": "meid",
-          "title": "MEID value",
-          "description": "14-char hex MEID to spoof, blank to skip, or 'random'.",
-          "required": false,
-          "type": "kotlin.String",
-          "default": null,
-          "values": null
-        },
-        {
-          "key": "imsi",
-          "title": "IMSI (Subscriber ID)",
-          "description": "15-digit IMSI to spoof, blank to skip, or 'random'.",
-          "required": false,
-          "type": "kotlin.String",
-          "default": null,
-          "values": null
-        },
-        {
-          "key": "iccid",
-          "title": "ICCID (SIM Serial)",
-          "description": "19-digit ICCID to spoof, blank to skip, or 'random'.",
-          "required": false,
-          "type": "kotlin.String",
-          "default": null,
-          "values": null
-        },
-        {
-          "key": "phone",
-          "title": "Phone number",
-          "description": "Phone number to spoof, blank to skip, or 'random'.",
-          "required": false,
-          "type": "kotlin.String",
-          "default": null,
-          "values": null
         }
       ]
     },
@@ -632,9 +585,7 @@
       "name": "Spoof Wi-Fi connection",
       "description": "Spoofs an existing Wi-Fi connection.",
       "default": false,
-      "dependencies": [
-        "BytecodePatch"
-      ],
+      "category": "Connectivity",
       "compatiblePackages": null,
       "options": []
     }

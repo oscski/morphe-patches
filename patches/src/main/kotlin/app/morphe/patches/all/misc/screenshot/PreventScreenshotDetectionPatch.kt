@@ -2,6 +2,8 @@ package app.morphe.patches.all.misc.screenshot
 
 import app.morphe.patcher.extensions.InstructionExtensions.removeInstruction
 import app.morphe.patcher.patch.bytecodePatch
+import app.morphe.patches.util.formatCount
+import app.morphe.patches.util.patchLogger
 import app.morphe.util.findMutableMethodOf
 import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.immutable.reference.ImmutableMethodReference
@@ -33,7 +35,11 @@ val preventScreenshotDetectionPatch = bytecodePatch(
     description = "Removes the registration of all screen capture callbacks. This prevents the app from detecting screenshots.",
     default = false,
 ) {
+    category("Screenshots")
+
     execute {
+        var removedCount = 0
+
         classDefForEach { classDef ->
             val mutableClass by lazy {
                 mutableClassDefBy(classDef)
@@ -64,8 +70,17 @@ val preventScreenshotDetectionPatch = bytecodePatch(
 
                 indicesToRemove.asReversed().forEach { index ->
                     mutableMethod.removeInstruction(index)
+                    removedCount++
                 }
             }
+        }
+
+        if (removedCount == 0) {
+            patchLogger.warning("No screen capture callback registrations found to remove")
+        } else {
+            patchLogger.info(
+                "Removed ${formatCount(removedCount, "screen capture callback registration", "screen capture callback registrations")}",
+            )
         }
     }
 }
