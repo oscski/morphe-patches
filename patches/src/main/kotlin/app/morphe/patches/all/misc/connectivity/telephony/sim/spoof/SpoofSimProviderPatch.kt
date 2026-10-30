@@ -4,6 +4,8 @@ import app.morphe.patcher.extensions.InstructionExtensions.getInstruction
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.bytecodePatch
 import app.morphe.patcher.patch.stringOption
+import app.morphe.patches.util.formatCount
+import app.morphe.patches.util.patchLogger
 import app.morphe.util.findMutableMethodOf
 import com.android.tools.smali.dexlib2.iface.instruction.Instruction
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
@@ -76,6 +78,8 @@ val spoofSIMProviderPatch = bytecodePatch(
     )
 
     execute {
+        var spoofedCount = 0
+
         classDefForEach { classDef ->
             val mutableClass by lazy { mutableClassDefBy(classDef) }
 
@@ -122,8 +126,15 @@ val spoofSIMProviderPatch = bytecodePatch(
                     val register = (nextInstr as OneRegisterInstruction).registerA
                     mutableMethod.replaceInstruction(index, "const-string v$register, \"$value\"")
                     mutableMethod.replaceInstruction(index + 1, "nop")
+                    spoofedCount++
                 }
             }
+        }
+
+        if (spoofedCount == 0) {
+            patchLogger.warning("No SIM provider calls found to spoof")
+        } else {
+            patchLogger.info("Spoofed ${formatCount(spoofedCount, "call/value", "calls/values")}")
         }
     }
 }

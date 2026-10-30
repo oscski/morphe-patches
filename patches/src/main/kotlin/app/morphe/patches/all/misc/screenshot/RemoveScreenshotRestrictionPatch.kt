@@ -2,6 +2,8 @@ package app.morphe.patches.all.misc.screenshot
 
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.patch.bytecodePatch
+import app.morphe.patches.util.formatCount
+import app.morphe.patches.util.patchLogger
 import app.morphe.patches.util.transformation.InvocationReplacement
 import app.morphe.patches.util.transformation.findInvokeVirtualIndices
 import app.morphe.patches.util.transformation.replaceInvokeVirtualWithExtension
@@ -29,6 +31,9 @@ val removeScreenshotRestrictionPatch = bytecodePatch(
     category("Screenshots")
 
     execute {
+        var interceptedCount = 0
+        var flagWriteCount = 0
+
         classDefForEach { classDef ->
             // Skip the extension class itself to avoid infinite recursion.
             if (classDef.type.startsWith(EXTENSION_CLASS_DESCRIPTOR_PREFIX)) return@classDefForEach
@@ -49,11 +54,13 @@ val removeScreenshotRestrictionPatch = bytecodePatch(
                             call,
                             indices,
                         )
+                        interceptedCount += indices.size
                     }
                 }
 
                 // Strip FLAG_SECURE from direct IPUT writes to LayoutParams#flags.
-                layoutParamsIputIndices(implementation).forEach { index ->
+                val flagWriteIndices = layoutParamsIputIndices(implementation)
+                flagWriteIndices.forEach { index ->
                     val register =
                         (implementation.instructions.elementAt(index) as Instruction22c).registerA
                     mutableMethod.addInstructions(
@@ -61,6 +68,20 @@ val removeScreenshotRestrictionPatch = bytecodePatch(
                         "and-int/lit16 v$register, v$register, -0x2001",
                     )
                 }
+                flagWriteCount += flagWriteIndices.size
+            }
+        }
+
+        if (interceptedCount == 0 && flagWriteCount == 0) {
+            patchLogger.warning("No screenshot restrictions found to remove")
+        } else {
+            if (interceptedCount > 0) {
+                patchLogger.info("Intercepted ${formatCount(interceptedCount, "call", "calls")}")
+            }
+            if (flagWriteCount > 0) {
+                patchLogger.info(
+                    "Removed FLAG_SECURE from ${formatCount(flagWriteCount, "flag write", "flag writes")}",
+                )
             }
         }
     }

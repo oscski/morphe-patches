@@ -1,6 +1,8 @@
 package app.morphe.patches.all.misc.connectivity.wifi.spoof
 
 import app.morphe.patcher.patch.bytecodePatch
+import app.morphe.patches.util.formatCount
+import app.morphe.patches.util.patchLogger
 import app.morphe.patches.util.transformation.InvocationReplacement
 import app.morphe.patches.util.transformation.findInvokeVirtualIndices
 import app.morphe.patches.util.transformation.replaceInvokeVirtualWithExtension
@@ -24,6 +26,8 @@ val spoofWiFiConnectionPatch = bytecodePatch(
     dependsOn(
         bytecodePatch {
             execute {
+                var interceptedCount = 0
+
                 classDefForEach { classDef ->
                     // Skip the extension class itself to avoid infinite recursion.
                     if (classDef.type.startsWith(EXTENSION_CLASS_DESCRIPTOR_PREFIX)) return@classDefForEach
@@ -43,9 +47,16 @@ val spoofWiFiConnectionPatch = bytecodePatch(
                                     call,
                                     indices,
                                 )
+                                interceptedCount += indices.size
                             }
                         }
                     }
+                }
+
+                if (interceptedCount == 0) {
+                    patchLogger.warning("No Wi-Fi calls found to intercept")
+                } else {
+                    patchLogger.info("Intercepted ${formatCount(interceptedCount, "call", "calls")}")
                 }
             }
         },
