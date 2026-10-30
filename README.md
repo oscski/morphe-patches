@@ -17,7 +17,7 @@ Or manually add this repository url as a patch source in Morphe: https://github.
 ## 🩹 Patches list
 
 <!-- PATCHES_START EXPANDED -->
-> **[v1.0.0](https://github.com/oscski/morphe-patches/releases/tag/v1.0.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;4 patches total
+> **[v1.1.0-dev.1](https://github.com/oscski/morphe-patches/releases/tag/v1.1.0-dev.1)**&nbsp;&nbsp;•&nbsp;&nbsp;`dev`&nbsp;&nbsp;•&nbsp;&nbsp;4 patches total
 <details open>
 <summary>🌐 Universal&nbsp;&nbsp;•&nbsp;&nbsp;4 patches</summary>
 <br>
@@ -26,7 +26,7 @@ Or manually add this repository url as a patch source in Morphe: https://github.
 |----------|----------------|-----------|
 | [Prevent screenshot detection](#prevent-screenshot-detection) | Removes the registration of all screen capture callbacks. This prevents the app from detecting screenshots. |  |
 | [Remove screenshot restriction](#remove-screenshot-restriction) | Removes the restriction of taking screenshots in apps that normally wouldn't allow it. |  |
-| [Spoof SIM provider](#spoof-sim-provider) | Spoofs information about the SIM card provider. | • Network ISO country code<br>• MCC+MNC network operator code<br>• Network operator name<br>• SIM ISO country code<br>• MCC+MNC SIM operator code<br>• SIM operator name<br>• IMEI value<br>• MEID value<br>• IMSI (Subscriber ID)<br>• ICCID (SIM Serial)<br>• Phone number |
+| [Spoof SIM provider](#spoof-sim-provider) | Spoofs information about the SIM card provider. | • Network ISO country code<br>• MCC+MNC network operator code<br>• Network operator name<br>• SIM ISO country code<br>• MCC+MNC SIM operator code<br>• SIM operator name |
 | [Spoof Wi-Fi connection](#spoof-wi-fi-connection) | Spoofs an existing Wi-Fi connection. |  |
 
 </details>
