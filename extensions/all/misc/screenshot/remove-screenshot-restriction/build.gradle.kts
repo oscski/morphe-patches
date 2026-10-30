@@ -10,7 +10,3 @@ android {
     }
 }
 
-dependencies {
-    compileOnly(libs.annotation)
-    compileOnly(libs.morphe.extensions.library)
-}
